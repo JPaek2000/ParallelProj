@@ -5,14 +5,14 @@
        public static void main(String[] args) throws IOException {
          Socket clientSocket = null; // socket for the thread
          Object [][] RoutingTable = new Object [10][2]; // routing table
-			int SockNum = 5555; // port number
+			int SockNum = 22; // port number
 			Boolean Running = true;
 			int ind = 0; // indext in the routing table	
 
 			//Accepting connections
          ServerSocket serverSocket = null; // server socket for accepting connections
          try {
-            serverSocket = new ServerSocket(5555);
+            serverSocket = new ServerSocket(22);
             System.out.println("ServerRouter is Listening on port: 5555.");
          }
              catch (IOException e) {
