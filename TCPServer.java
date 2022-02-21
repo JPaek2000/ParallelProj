@@ -10,7 +10,7 @@
          BufferedReader in = null; // for reading form ServerRouter
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Server machine's IP			
-			String routerName = "studentweb.kennesaw.edu"; // ServerRouter host name
+			String routerName = "127.0.0.1"; // ServerRouter host name
 			int SockNum = 22; // port number
 			
 			// Tries to connect to the ServerRouter
