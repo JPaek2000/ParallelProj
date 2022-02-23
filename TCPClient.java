@@ -12,6 +12,7 @@
 			String host = addr.getHostAddress(); // Client machine's IP
       	String routerName ="127.0.0.1"; // ServerRouter host name
 			int SockNum = 22; // port number
+         int ClientID = 1;   //identifier variable for each client
 			
 			// Tries to connect to the ServerRouter
          try {
@@ -59,6 +60,13 @@
 					t0 = System.currentTimeMillis();
             }
          }
+         Writer writer = new FileWriter("file.txt");
+         BufferedWriter toFile =  new BufferedWriter(writer);
+         toFile.newLine();
+         toFile.write(ClientID);
+         ClientID++;
+
+
       	
 			// closing connections
          out.close();
