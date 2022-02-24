@@ -1,8 +1,19 @@
    import java.io.*;
    import java.net.*;
+   import java.util.Scanner;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.spi.AudioFileReader;
+   
 
     public class TCPClient {
        public static void main(String[] args) throws IOException {
+         //files for transferring
+         String audio_file = "sample-audio.mp3";
+         String video_file = "sample-video.mp4";
+         String text_file = "file.txt";
+         Scanner scanner = new Scanner(System.in);
       	
 			// Variables for setting up connection and communication
          Socket Socket = null; // socket to connect with ServerRouter
@@ -12,7 +23,18 @@
 			String host = addr.getHostAddress(); // Client machine's IP
       	String routerName ="127.0.0.1"; // ServerRouter host name
 			int SockNum = 22; // port number
-         int ClientID = 1;   //identifier variable for each client
+
+         System.out.println("Which sample file would you like to transfer?:");
+         System.out.println("1. Text");
+         System.out.println("2. Audio");
+         System.out.println("3. Video");
+         int choice = scanner.nextInt();
+         String filePath = null;
+         switch (choice) {
+            case 1: filePath = text_file;
+            case 2: filePath = audio_file;
+            case 3: filePath = video_file;
+         }        
 			
 			// Tries to connect to the ServerRouter
          try {
@@ -29,8 +51,16 @@
                System.exit(1);
             }
 				
-      	// Variables for message passing	
-         Reader reader = new FileReader("file.txt"); 
+      	// Variables for message passing                
+         Reader reader = new FileReader(filePath);
+         File file = new File(filePath);
+         try {
+         AudioInputStream input = AudioSystem.getAudioInputStream(file);
+         } catch (Exception e) {
+         System.out.println(e);
+         }
+
+         
 			BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
          String fromServer; // messages received from ServerRouter
          String fromUser; // messages sent to ServerRouter
@@ -59,15 +89,7 @@
                out.println(fromUser); // sending the strings to the Server via ServerRouter
 					t0 = System.currentTimeMillis();
             }
-         }
-         Writer writer = new FileWriter("file.txt");
-         BufferedWriter toFile =  new BufferedWriter(writer);
-         toFile.newLine();
-         toFile.write(ClientID);
-         ClientID++;
-
-
-      	
+         }      	
 			// closing connections
          out.close();
          in.close();
