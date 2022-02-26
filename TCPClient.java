@@ -25,19 +25,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
       	String routerName ="127.0.0.1"; // ServerRouter host name
 			int SockNum = 22; // port number
 
-         System.out.println("Which sample file would you like to transfer?:");
-         System.out.println("1. Text");
-         System.out.println("2. Audio");
-         System.out.println("3. Video");
-         int choice = scanner.nextInt();
-         String filePath = null;
-         switch (choice) {
-            case 1: filePath = text_file; readTextFile(filePath); break;
-            case 2: filePath = audio_file; readAudioFile(filePath); break;
-            case 3: filePath = video_file; readVideoFile(filePath); break;
-            default: break;
-         }               
-			scanner.close(); 
+         String filePath = Start(audio_file, video_file, text_file, scanner); //filePath could also be a message
 
 			// Tries to connect to the ServerRouter
          try {
@@ -97,6 +85,51 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          Socket.close();
       }
 
+      private static String Start(String audio_file, String video_file, String text_file, Scanner scanner)
+            throws IOException, UnsupportedAudioFileException {
+         System.out.println("Which sample file would you like to transfer?:");
+         System.out.println("1. Text");
+         System.out.println("2. Audio");
+         System.out.println("3. Video");
+         System.out.println("4. Send my own message!");
+         int choice = scanner.nextInt();
+         String filePath = null;
+         switch (choice) {
+            case 1: filePath = text_file; readTextFile(filePath); break;
+            case 2: filePath = audio_file; readAudioFile(filePath); break;
+            case 3: filePath = video_file; readVideoFile(filePath); break;
+            case 4: filePath = inputMessageFromClient(); readTextFile(filePath);break;
+            default: break;
+         }               
+			scanner.close();
+         return filePath;
+      }
+
+      public static String inputMessageFromClient() throws IOException {
+         Scanner scanner = new Scanner(System.in);
+         String message = scanner.nextLine();
+         
+         scanner.close();
+         return writeMessageToFile(message);         
+      }
+
+      public static String writeMessageToFile(String message) throws IOException {
+         String path = "client_input.txt";
+         File textFile = new File(path);
+
+         if (textFile.createNewFile())         
+            System.out.println("Message written to " + textFile.getPath());         
+         else System.out.println(textFile.getPath() + " already exists and will be appended to");
+   
+         FileWriter writer = new FileWriter(textFile,true);
+         
+         writer.write(message);         
+         writer.write("\nBye.");
+
+         writer.close();
+         return path;
+      }
+
       public static void readTextFile(String filePath) throws IOException {
          Reader reader = new FileReader(filePath);         
 			BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
@@ -112,7 +145,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          }
 
       }
-
 
       public static void readVideoFile(String filePath) {
 

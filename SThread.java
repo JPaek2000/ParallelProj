@@ -7,7 +7,10 @@ public class SThread extends Thread
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
    private BufferedReader in; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, destination, addr; // communication strings
+	private String inputLine; // communication strings
+	private String outputLine;
+	private String destination;
+	private String addr;
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind; // indext in the routing table
 	long t0, t;
@@ -54,6 +57,7 @@ public class SThread extends Thread
 		//t1 = System.currentTimeMillis();
 		t = System.nanoTime() - t0;
 		// Communication loop	
+		
 		while ((inputLine = in.readLine()) != null) {   
             System.out.println("Client/Server said: " + inputLine);
             if (inputLine.equals("Bye.")) {// exit statement 
@@ -90,7 +94,7 @@ public class SThread extends Thread
 		FileWriter writer = new FileWriter(statsFile,true);
 		writer.write("Client ID: " + ind + "\n");
 		writer.write("Routing Table lookup time: " + t + "ns\n"); //prints lookup time in nanoseconds
-		
+		System.out.format("\nFile size: %d bytes\n", fileSize);
 		
 		writer.write("\n");
 		writer.close();
