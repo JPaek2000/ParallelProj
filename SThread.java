@@ -1,8 +1,6 @@
 //Names: Jason Paek, Bryan Nix, Mohammad Umar, Braxton Meyer
 import java.io.*;
 import java.net.*;
-import java.lang.Exception;
-
 	
 public class SThread extends Thread 
 {
@@ -12,6 +10,7 @@ public class SThread extends Thread
 	private String inputLine, outputLine, destination, addr; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind; // indext in the routing table
+	long t0, t;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index) throws IOException
@@ -44,6 +43,7 @@ public class SThread extends Thread
 		}
 		
 		// loops through the routing table to find the destination
+		t0 = System.nanoTime();
 		for ( int i=0; i<10; i++) 
 				{
 					if (destination.equals((String) RTable[i][0])){
@@ -51,12 +51,14 @@ public class SThread extends Thread
 						System.out.println("Found destination: " + destination);
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 				}}
-		
+		//t1 = System.currentTimeMillis();
+		t = System.nanoTime() - t0;
 		// Communication loop	
-		while ((inputLine = in.readLine()) != null) {
+		while ((inputLine = in.readLine()) != null) {   
             System.out.println("Client/Server said: " + inputLine);
             if (inputLine.equals("Bye.")) {// exit statement 
-				System.out.println("Client ID: " + ind);	//added by Bryan
+				//System.out.println("Client ID: " + ind);	//each new client prints their ID {Bryan}
+				
 				break;
 			}
             outputLine = inputLine; // passes the input from the machine to the output string for the destination
@@ -64,11 +66,38 @@ public class SThread extends Thread
 				if ( outSocket != null){				
 				outTo.println(outputLine); // writes to the destination
 				}			
-       }// end while		 
+       }// end while		   	 
 		 }// end try
 			catch (IOException e) {
                System.err.println("Could not listen to socket.");
                System.exit(1);
          }
+
+		try {
+			writeStatistics(ind,t);
+		} catch (IOException e) {			
+			e.printStackTrace();
+		}
 	}
+
+	public static void writeStatistics(int ind,long t) throws IOException {
+		File statsFile = new File("statistics_p1.txt");
+
+		if (statsFile.createNewFile())         
+		   System.out.println("Server statistics written to " + statsFile.getPath());         
+		else System.out.println(statsFile.getPath() + " already exists and will be appended to");
+
+		FileWriter writer = new FileWriter(statsFile,true);
+		writer.write("Client ID: " + ind + "\n");
+		writer.write("Routing Table lookup time: " + t + "ns\n"); //prints lookup time in nanoseconds
+		
+		
+		writer.write("\n");
+		writer.close();
+	 }
+
+
+
+	
+
 }

@@ -1,0 +1,6 @@
+Client ID: 1
+Routing Table lookup time: 276900ns
+
+Client ID: 2
+Routing Table lookup time: 381600ns
+

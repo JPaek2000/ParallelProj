@@ -34,11 +34,24 @@
                System.err.println("Client/Server failed to connect.");
                System.exit(1);
             }
-			}//end while
-			
+			}//end while			
 			//closing connections
 		   clientSocket.close();
          serverSocket.close();
+         
 
+      }
+
+      public static void writeStatistics(int ind) throws IOException {
+         File statsFile = new File("statistics_p1.txt");
+
+         if (statsFile.createNewFile())         
+            System.out.println("Server statisitcs written to " + statsFile.getPath());         
+         else System.out.println(statsFile.getPath() + " already exists");
+
+         FileWriter writer = new FileWriter(statsFile);
+         writer.write("Size of routing table: " + ind);
+
+         writer.close();
       }
    }
