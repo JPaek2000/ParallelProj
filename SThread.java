@@ -78,14 +78,15 @@ public class SThread extends Thread
          }
 
 		try {
-			writeStatistics(ind,t);
+			writeStatistics(ind,t,inputLine);
 		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 	}
 
-	public static void writeStatistics(int ind,long t) throws IOException {
+	public static void writeStatistics(int ind,long t, String input) throws IOException {
 		File statsFile = new File("statistics_p1.txt");
+		final byte[] fileSize =  input.getBytes("UTF-8");
 
 		if (statsFile.createNewFile())         
 		   System.out.println("Server statistics written to " + statsFile.getPath());         
@@ -94,9 +95,9 @@ public class SThread extends Thread
 		FileWriter writer = new FileWriter(statsFile,true);
 		writer.write("Client ID: " + ind + "\n");
 		writer.write("Routing Table lookup time: " + t + "ns\n"); //prints lookup time in nanoseconds
-		System.out.format("\nFile size: %d bytes\n", fileSize);
+		writer.write("File size: " + fileSize.length + " bytes\n");
 		
-		writer.write("\n");
+		//writer.write("\n");
 		writer.close();
 	 }
 
