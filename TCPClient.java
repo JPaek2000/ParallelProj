@@ -75,8 +75,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
                System.out.println("Client: " + fromUser);
                out.println(fromUser); // sending the strings to the Server via ServerRouter
 					t0 = System.currentTimeMillis();
-            }
-            System.out.format("\nFile size: %d bytes\n", fileSize);
+            }           
          }
          fromFile.close();      	
 			// closing connections

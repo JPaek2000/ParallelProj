@@ -13,7 +13,7 @@ public class SThread extends Thread
 	private String addr;
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind; // indext in the routing table
-	long t0, t;
+	long routing_t0, routing_time,thread_t0, thread_time;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index) throws IOException
@@ -30,6 +30,7 @@ public class SThread extends Thread
 	// Run method (will run for each machine that connects to the ServerRouter)
 	public void run()
 	{
+		thread_t0 = System.currentTimeMillis();
 		try
 		{
 		// Initial sends/receives
@@ -46,7 +47,7 @@ public class SThread extends Thread
 		}
 		
 		// loops through the routing table to find the destination
-		t0 = System.nanoTime();
+		routing_t0 = System.nanoTime();
 		for ( int i=0; i<10; i++) 
 				{
 					if (destination.equals((String) RTable[i][0])){
@@ -55,7 +56,7 @@ public class SThread extends Thread
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 				}}
 		//t1 = System.currentTimeMillis();
-		t = System.nanoTime() - t0;
+		routing_time = System.nanoTime() - routing_t0;
 		// Communication loop	
 		
 		while ((inputLine = in.readLine()) != null) {   
@@ -74,15 +75,18 @@ public class SThread extends Thread
                System.err.println("Could not listen to socket.");
                System.exit(1);
          }
+		thread_time = System.currentTimeMillis() - thread_t0;
 
 		try {
-			writeStatistics(ind,t,inputLine);
+			writeStatistics(ind,thread_time,routing_time,inputLine);
 		} catch (IOException e) {			
 			e.printStackTrace();
 		}
+
+		
 	}
 
-	public static void writeStatistics(int ind,long t, String input) throws IOException {
+	public static void writeStatistics(int ind,long thread_time,long routing_time, String input) throws IOException {
 		//File statsFile = new File("statistics_p1.txt");
 		final byte[] fileSize =  input.getBytes("UTF-8");
 		PrintWriter pw = new PrintWriter(new FileOutputStream(new File("raw_stats_p1.csv"),true));
@@ -95,17 +99,14 @@ public class SThread extends Thread
 		sb.append("\n");
 		sb.append(ind);
 		sb.append(",");
-		sb.append(t);
+		sb.append(thread_time);
+		sb.append(",");
+		sb.append(routing_time);
 		sb.append(",");		
 		sb.append(fileSize.length);		
 		pw.write(sb.toString());	
 		pw.close();
-		System.out.println("Transmission stats recorded");
-		
-		
-		
-		
-		
+		System.out.println("Transmission stats recorded");		
 		
 		/* FileWriter writer = new FileWriter(statsFile,true);
 		writer.write("Client ID: " + ind + "\n");
