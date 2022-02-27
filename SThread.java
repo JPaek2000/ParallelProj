@@ -60,9 +60,7 @@ public class SThread extends Thread
 		
 		while ((inputLine = in.readLine()) != null) {   
             System.out.println("Client/Server said: " + inputLine);
-            if (inputLine.equals("Bye.")) {// exit statement 
-				//System.out.println("Client ID: " + ind);	//each new client prints their ID {Bryan}
-				
+            if (inputLine.equals("Bye.")) {// exit statement 				
 				break;
 			}
             outputLine = inputLine; // passes the input from the machine to the output string for the destination
@@ -85,20 +83,37 @@ public class SThread extends Thread
 	}
 
 	public static void writeStatistics(int ind,long t, String input) throws IOException {
-		File statsFile = new File("statistics_p1.txt");
+		//File statsFile = new File("statistics_p1.txt");
 		final byte[] fileSize =  input.getBytes("UTF-8");
+		PrintWriter pw = new PrintWriter(new FileOutputStream(new File("raw_stats_p1.csv"),true));
 
-		if (statsFile.createNewFile())         
+		/* if (statsFile.createNewFile())         
 		   System.out.println("Server statistics written to " + statsFile.getPath());         
-		else System.out.println(statsFile.getPath() + " already exists and will be appended to");
+		else System.out.println(statsFile.getPath() + " already exists and will be appended to"); */
 
-		FileWriter writer = new FileWriter(statsFile,true);
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n");
+		sb.append(ind);
+		sb.append(",");
+		sb.append(t);
+		sb.append(",");		
+		sb.append(fileSize.length);		
+		pw.write(sb.toString());	
+		pw.close();
+		System.out.println("Transmission stats recorded");
+		
+		
+		
+		
+		
+		
+		/* FileWriter writer = new FileWriter(statsFile,true);
 		writer.write("Client ID: " + ind + "\n");
 		writer.write("Routing Table lookup time: " + t + "ns\n"); //prints lookup time in nanoseconds
 		writer.write("File size: " + fileSize.length + " bytes\n");
 		
 		//writer.write("\n");
-		writer.close();
+		writer.close(); */
 	 }
 
 

@@ -85,6 +85,11 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          Socket.close();
       }
 
+
+     /**
+     * Runs a command prompt to allow user to choose which 
+     * type of file to send to the ServerRouter. 
+     */
       private static String Start(String audio_file, String video_file, String text_file, Scanner scanner)
             throws IOException, UnsupportedAudioFileException {
          System.out.println("Which sample file would you like to transfer?:");
@@ -105,6 +110,11 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          return filePath;
       }
 
+      /**
+       * Takes string input from user and sends it to {@link #writeMessageToFile()}
+       * and returns its output which is a file path. 
+       * @throws IOException
+       */
       public static String inputMessageFromClient() throws IOException {
          Scanner scanner = new Scanner(System.in);
          String message = scanner.nextLine();
@@ -125,7 +135,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          
          writer.write(message);         
          writer.write("\nBye.");
-
+         
+         
          writer.close();
          return path;
       }
