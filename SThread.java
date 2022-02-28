@@ -13,7 +13,8 @@ public class SThread extends Thread
 	private String addr;
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind; // indext in the routing table
-	long routing_t0, routing_time,thread_t0, thread_time;
+	private long routing_t0, routing_time,thread_t0, thread_time;
+	private byte[] file;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index) throws IOException
@@ -57,8 +58,8 @@ public class SThread extends Thread
 				}}
 		//t1 = System.currentTimeMillis();
 		routing_time = System.nanoTime() - routing_t0;
-		// Communication loop	
 		
+		// Communication loop			
 		while ((inputLine = in.readLine()) != null) {   
             System.out.println("Client/Server said: " + inputLine);
             if (inputLine.equals("Bye.")) {// exit statement 				
@@ -89,7 +90,7 @@ public class SThread extends Thread
 	public static void writeStatistics(int ind,long thread_time,long routing_time, String input) throws IOException {
 		//File statsFile = new File("statistics_p1.txt");
 		final byte[] fileSize =  input.getBytes("UTF-8");
-		PrintWriter pw = new PrintWriter(new FileOutputStream(new File("raw_stats_p1.csv"),true));
+		PrintWriter pw = new PrintWriter(new FileOutputStream(new File("../printouts/raw_stats_p1.csv"),true));
 
 		/* if (statsFile.createNewFile())         
 		   System.out.println("Server statistics written to " + statsFile.getPath());         

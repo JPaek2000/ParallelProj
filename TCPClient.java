@@ -10,16 +10,17 @@ import javax.sound.sampled.UnsupportedAudioFileException;
     public class TCPClient {
        public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
          //files for transferring
-         String audio_file = "sample-audio.wav";
-         String video_file = "sample-video.mp4";
-         String text_file = "file.txt";
+         String audio_file = "../assets/sample-audio.wav";
+         String video_file = "../assets/sample-video.mp4";
+         String text_file = "../assets/file.txt";
          Scanner scanner = new Scanner(System.in);
       	
 			// Variables for setting up connection and communication
          Socket Socket = null; // socket to connect with ServerRouter
          PrintWriter out = null; // for writing to ServerRouter
-         BufferedReader in = null; // for reading form ServerRouter
-         //DataInputStream in = null;
+         BufferedReader in = null; // for reading form ServerRouter     
+        // FileInputStream input = null;         
+         //DataOutputStream output = null;
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Client machine's IP
       	String routerName ="127.0.0.1"; // ServerRouter host name
@@ -32,7 +33,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
             Socket = new Socket(routerName, SockNum);
             out = new PrintWriter(Socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
-            //in = new DataInputStream(new BufferedInputStream(Socket.getInputStream()));
+            //output = new DataOutputStream(new BufferedOutputStream(Socket.getOutputStream()));
          } 
              catch (UnknownHostException e) {
                System.err.println("Don't know about router: " + routerName);
@@ -44,9 +45,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
             }
 				
       	// Variables for message passing                
-         Reader reader = new FileReader(filePath);    
-         File file = new File(filePath);
-         long fileSize = file.length();     
+         Reader reader = new FileReader(filePath); 
 			BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
          String fromServer; // messages received from ServerRouter
          String fromUser; // messages sent to ServerRouter
@@ -123,7 +122,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
       }
 
       public static String writeMessageToFile(String message) throws IOException {
-         String path = "client_input.txt";
+         String path = "../printouts/client_input.txt";
          File textFile = new File(path);
 
          if (textFile.createNewFile())         
@@ -142,7 +141,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
       public static void readTextFile(String filePath) throws IOException {
          Reader reader = new FileReader(filePath);         
-			BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
+			try (BufferedReader fromFile = new BufferedReader(reader)) {
+         }
       }
 
       public static void readAudioFile(String filePath) throws UnsupportedAudioFileException, IOException
@@ -152,8 +152,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          AudioInputStream input = AudioSystem.getAudioInputStream(file);  
          } catch (Exception e) {
             System.out.println(e);
-         }
-
+         }            
       }
 
       public static void readVideoFile(String filePath) {
@@ -161,7 +160,13 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
       }
 
-
+      public static byte[] createByteArrayFromFile(File file) throws IOException{
+         FileInputStream fis = new FileInputStream(file);
+         byte[] fileBytes = new byte[(int)file.length()];
+         fis.read(fileBytes);
+         fis.close();
+         return fileBytes;
+      }
    }
 
        

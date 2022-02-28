@@ -8,6 +8,7 @@
          Socket Socket = null; // socket to connect with ServerRouter
          PrintWriter out = null; // for writing to ServerRouter
          BufferedReader in = null; // for reading form ServerRouter
+         //DataInputStream input = null;
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Server machine's IP			
 			String routerName = "127.0.0.1"; // ServerRouter host name
@@ -18,6 +19,7 @@
             Socket = new Socket(routerName, SockNum);
             out = new PrintWriter(Socket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
+            //input = new DataInputStream(Socket.getInputStream());
          } 
              catch (UnknownHostException e) {
                System.err.println("Don't know about router: " + routerName);
