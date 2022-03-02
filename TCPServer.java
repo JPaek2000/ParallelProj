@@ -2,24 +2,40 @@
    import java.net.*;
 
     public class TCPServer {
+      public final static String video_file = "../assets/sample-video.mp4";
+      public final static String audio_file = "../assets/sample-audio.wav";
+      public final static String text_file = "../assets/file.txt";
        public static void main(String[] args) throws IOException {
       	
 			// Variables for setting up connection and communication
          Socket Socket = null; // socket to connect with ServerRouter
          PrintWriter out = null; // for writing to ServerRouter
          BufferedReader in = null; // for reading form ServerRouter
-         //DataInputStream input = null;
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Server machine's IP			
 			String routerName = "127.0.0.1"; // ServerRouter host name
 			int SockNum = 22; // port number
+
+         //my variables
+         FileInputStream input = null;
+         BufferedInputStream bis = null;
+         OutputStream output = null;    
+         File file = new File(audio_file); 
+         
 			
 			// Tries to connect to the ServerRouter
          try {
             Socket = new Socket(routerName, SockNum);
             out = new PrintWriter(Socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
-            //input = new DataInputStream(Socket.getInputStream());
+            in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));   
+            
+/*          byte[] bytes = new byte[4096];    
+            input = new FileInputStream(file);
+            bis = new BufferedInputStream(input); //read file
+            bis.read(bytes,0,bytes.length);
+            output = Socket.getOutputStream();
+            output.write(bytes,0,bytes.length); //send file
+            output.flush(); */
          } 
              catch (UnknownHostException e) {
                System.err.println("Don't know about router: " + routerName);

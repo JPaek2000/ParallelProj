@@ -1,6 +1,9 @@
    import java.io.*;
    import java.net.*;
-   import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -8,32 +11,68 @@ import javax.sound.sampled.UnsupportedAudioFileException;
    
 
     public class TCPClient {
+      public final static String video_file = "../assets/sample-video.mp4";
+      public final static String audio_file = "../assets/sample-audio.wav";
+      public final static String text_file = "../assets/file.txt";
        public static void main(String[] args) throws IOException, UnsupportedAudioFileException {
          //files for transferring
-         String audio_file = "../assets/sample-audio.wav";
-         String video_file = "../assets/sample-video.mp4";
-         String text_file = "../assets/file.txt";
+
          Scanner scanner = new Scanner(System.in);
       	
 			// Variables for setting up connection and communication
          Socket Socket = null; // socket to connect with ServerRouter
-         PrintWriter out = null; // for writing to ServerRouter
-         BufferedReader in = null; // for reading form ServerRouter     
-        // FileInputStream input = null;         
-         //DataOutputStream output = null;
+         PrintWriter out = null; // for writing to ServerRouter 
+         BufferedReader in = null; // for reading form ServerRouter
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Client machine's IP
       	String routerName ="127.0.0.1"; // ServerRouter host name
-			int SockNum = 22; // port number
+			int SockNum = 22; // port number         
 
-         String filePath = Start(audio_file, video_file, text_file, scanner); //filePath could also be a message
+
+         //my streamers
+         OutputStream output = null;
+         InputStream input = null;
+         FileOutputStream fos = null;
+         BufferedOutputStream bos = null;
+
+         //String filePath = Start(audio_file, video_file, text_file, scanner); //filePath could also be a message
+
+
 
 			// Tries to connect to the ServerRouter
          try {
-            Socket = new Socket(routerName, SockNum);
-            out = new PrintWriter(Socket.getOutputStream(), true);
+            Socket = new Socket(routerName, SockNum);            
+            out = new PrintWriter(Socket.getOutputStream(),true);
             in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
-            //output = new DataOutputStream(new BufferedOutputStream(Socket.getOutputStream()));
+
+            DataInputStream dis = new DataInputStream(Socket.getInputStream());
+            DataOutputStream dos = new DataOutputStream(Socket.getOutputStream());
+
+            while (true)
+            {
+               System.out.println(dis.readUTF());
+               String tosend = scanner.nextLine();
+               dos.writeUTF(tosend);
+
+               if (tosend.equals("4")) {
+                  System.out.println("Closing connection");
+                  Socket.close();
+                  break;
+               }
+            }
+
+
+         /*   File file = new File(filePath);    
+            output =Socket.getOutputStream();
+            input = Socket.getInputStream();
+            fos = new FileOutputStream(file);
+            bos = new BufferedOutputStream(fos);  */     
+
+            byte[] buffer = new byte[4096];
+            int count;
+            while ((count = input.read(buffer)) > 0) {
+               output.write(buffer,0,count);
+            }
          } 
              catch (UnknownHostException e) {
                System.err.println("Don't know about router: " + routerName);
@@ -43,17 +82,19 @@ import javax.sound.sampled.UnsupportedAudioFileException;
                System.err.println("Couldn't get I/O for the connection to: " + routerName);
                System.exit(1);
             }
-				
-      	// Variables for message passing                
-         Reader reader = new FileReader(filePath); 
-			BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
+			
+         //SendFile(input, output, buffer);
+
+      	// Variables for message passing 
+         String filePath = text_file;
+         BufferedReader fromFile =  new BufferedReader(new FileReader(filePath)); // reader for the string file			
          String fromServer; // messages received from ServerRouter
-         String fromUser; // messages sent to ServerRouter
+         String fromUser; // messages sent to ServerRouter        
 			String address ="127.0.0.1"; // destination IP (Server)
 			long t0, t1, t;
 			
 			// Communication process (initial sends/receives
-			out.println(address);// initial send (IP of the destination Server)
+			out.println(address);// initial send (IP of the destination Server) 
 			fromServer = in.readLine();//initial receive from router (verification of connection)
 			System.out.println("ServerRouter: " + fromServer);
 			out.println(host); // Client sends the IP of its machine as initial send
@@ -83,6 +124,21 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          Socket.close();
       }
 
+
+      private static void SendFile(BufferedInputStream input, OutputStream output, byte[] buffer) throws IOException {
+         int count;
+         while ((count = input.read(buffer)) >= 0) {
+            output.write(buffer,0,count);
+            output.flush();
+         }
+      }
+
+      private static void sendText(String filePath) throws FileNotFoundException {
+         BufferedReader fromFile =  new BufferedReader(new FileReader(filePath)); // reader for the string file			
+         String fromServer; // messages received from ServerRouter
+         String fromUser; // messages sent to ServerRouter
+
+      }
 
      /**
      * Runs a command prompt to allow user to choose which 

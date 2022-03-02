@@ -8,7 +8,9 @@
 			int SockNum = 22; // port number
 			Boolean Running = true;
 			int ind = 0; // indext in the routing table	
-
+                  
+         int bytesRead;
+         File file = new File("../assets/file.txt");
 			//Accepting connections
          ServerSocket serverSocket = null; // server socket for accepting connections
          try {
@@ -25,7 +27,17 @@
 			{
 			try {
 				clientSocket = serverSocket.accept();
-				SThread t = new SThread(RoutingTable, clientSocket, ind); // creates a thread with a random port
+            System.out.println("New client connected");
+            DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
+            DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+            System.out.println("Assigning new thread");
+/*             InputStream in = clientSocket.getInputStream();
+            OutputStream output = new FileOutputStream(file);
+            byte[] buffer = new byte[4096];
+            while ((bytesRead = in.read(buffer)) != -1) {
+               output.write(buffer,0,bytesRead);
+            } */            
+				SThread t = new SThread(RoutingTable, clientSocket, ind,dis,dos); // creates a thread with a random port
 				t.start(); // starts the thread
 				ind++; // increments the index
             System.out.println("ServerRouter connected with Client/Server: " + clientSocket.getInetAddress().getHostAddress());
@@ -40,18 +52,5 @@
          serverSocket.close();
          
 
-      }
-
-      public static void writeStatistics(int ind) throws IOException {
-         File statsFile = new File("statistics_p1.txt");
-
-         if (statsFile.createNewFile())         
-            System.out.println("Server statisitcs written to " + statsFile.getPath());         
-         else System.out.println(statsFile.getPath() + " already exists");
-
-         FileWriter writer = new FileWriter(statsFile);
-         writer.write("Size of routing table: " + ind);
-
-         writer.close();
       }
    }
