@@ -1,6 +1,9 @@
 //Names: Jason Paek, Bryan Nix, Mohammad Umar, Braxton Meyer
 import java.io.*;
 import java.net.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 	
 public class SThread extends Thread 
 {
@@ -16,14 +19,15 @@ public class SThread extends Thread
 
 
 	private long routing_t0, routing_time,thread_t0, thread_time;
-	private byte[] file;
 	DataInputStream dis; DataOutputStream dos;
+	OutputStream os;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index, DataInputStream dis, DataOutputStream dos) throws IOException
 	{
 			out = new PrintWriter(toClient.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));			
+			in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));
+			os = toClient.getOutputStream();			
 			RTable = Table;
 			addr = toClient.getInetAddress().getHostAddress();
 			RTable[index][0] = addr; // IP addresses 
@@ -37,23 +41,38 @@ public class SThread extends Thread
 	public void run()
 	{
 		String received;
+		String path;
 		String toreturn;
-		while (true) 
+		boolean done = false;
+
+		while (!done) 
 		{
 			try {
 				dos.writeUTF("Do you want (1) text, (2) audio, or (3) video? 4 for Exit");
+				dos.flush();
 				received = dis.readUTF();
 
 				if (received.equals("4"))
 				{
-					this.outSocket.close();
+					done = true;
 					break;
 				}
-
+					
 				switch (received) {
 					case "1":
-						toreturn = "../assets/file.txt";
-						dos.writeUTF(toreturn);
+						path = "file.txt";
+						dos.writeUTF(path);
+						//dos.flush();
+						File file = new File(path);
+						FileInputStream fis = new FileInputStream("../assets/file.txt");
+						byte[] data = new byte[(int) file.length()];
+						fis.read(data);
+						fis.close();
+						//Path file = Paths.get("../assets/file.txt");
+						
+						dos = new DataOutputStream(os);
+						dos.write(data,0,data.length);	
+						dos.flush();					
 						break;
 					case "2":
 						toreturn = "../assets/sample-audio.wav";
@@ -71,6 +90,7 @@ public class SThread extends Thread
 				e.printStackTrace();
 			}
 		}
+		
 
 
 
@@ -162,7 +182,16 @@ public class SThread extends Thread
 		writer.close(); */
 	 }
 
-
+	 public static int writeBuffer(DataInputStream in, DataOutputStream out) throws IOException {
+		 byte[] buffer = new byte[4096];
+		 int bytesRead = 0;
+		 int totalBytes = 0;
+		 while((bytesRead = in.read(buffer)) != -1) {
+			 totalBytes += bytesRead;
+			 out.write(buffer,0,bytesRead);
+		 }
+		 return totalBytes;
+	 }
 
 	
 

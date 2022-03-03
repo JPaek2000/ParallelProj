@@ -9,12 +9,10 @@
 			Boolean Running = true;
 			int ind = 0; // indext in the routing table	
                   
-         int bytesRead;
-         File file = new File("../assets/file.txt");
 			//Accepting connections
          ServerSocket serverSocket = null; // server socket for accepting connections
          try {
-            serverSocket = new ServerSocket(22);
+            serverSocket = new ServerSocket(SockNum);
             System.out.println("ServerRouter is Listening on port: 22.");
          }
              catch (IOException e) {
@@ -31,12 +29,6 @@
             DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
             DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
             System.out.println("Assigning new thread");
-/*             InputStream in = clientSocket.getInputStream();
-            OutputStream output = new FileOutputStream(file);
-            byte[] buffer = new byte[4096];
-            while ((bytesRead = in.read(buffer)) != -1) {
-               output.write(buffer,0,bytesRead);
-            } */            
 				SThread t = new SThread(RoutingTable, clientSocket, ind,dis,dos); // creates a thread with a random port
 				t.start(); // starts the thread
 				ind++; // increments the index

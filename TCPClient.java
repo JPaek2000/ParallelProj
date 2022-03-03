@@ -34,6 +34,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
          InputStream input = null;
          FileOutputStream fos = null;
          BufferedOutputStream bos = null;
+         FileWriter fw;
 
          //String filePath = Start(audio_file, video_file, text_file, scanner); //filePath could also be a message
 
@@ -47,32 +48,35 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
             DataInputStream dis = new DataInputStream(Socket.getInputStream());
             DataOutputStream dos = new DataOutputStream(Socket.getOutputStream());
-
-            while (true)
+            
+            boolean done = false;
+            while (!done)
             {
                System.out.println(dis.readUTF());
                String tosend = scanner.nextLine();
-               dos.writeUTF(tosend);
+               dos.writeUTF(tosend);    
 
                if (tosend.equals("4")) {
-                  System.out.println("Closing connection");
-                  Socket.close();
+                  done = true;
                   break;
                }
             }
-
-
-         /*   File file = new File(filePath);    
-            output =Socket.getOutputStream();
+            String path = dis.readUTF();
+            System.out.println("This is the path" + path);
+            File file = new File(path);
+            file.createNewFile();
             input = Socket.getInputStream();
-            fos = new FileOutputStream(file);
-            bos = new BufferedOutputStream(fos);  */     
-
-            byte[] buffer = new byte[4096];
-            int count;
-            while ((count = input.read(buffer)) > 0) {
-               output.write(buffer,0,count);
-            }
+            dis = new DataInputStream(input);       
+            int count = dis.available();
+                       
+            byte[] data = new byte[count];
+            int bytes = dis.read(data);
+            
+            output = new FileOutputStream(file);
+            BufferedOutputStream writer = new BufferedOutputStream(output);
+            writer.write(data);
+            writer.close();
+            
          } 
              catch (UnknownHostException e) {
                System.err.println("Don't know about router: " + routerName);

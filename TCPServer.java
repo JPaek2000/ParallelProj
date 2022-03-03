@@ -17,6 +17,7 @@
 			int SockNum = 22; // port number
 
          //my variables
+         DataInputStream streamIn = null;
          FileInputStream input = null;
          BufferedInputStream bis = null;
          OutputStream output = null;    
@@ -27,15 +28,11 @@
          try {
             Socket = new Socket(routerName, SockNum);
             out = new PrintWriter(Socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));   
+            in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
+            DataInputStream dis = new DataInputStream(Socket.getInputStream());
+            DataOutputStream dos = new DataOutputStream(Socket.getOutputStream());  
             
-/*          byte[] bytes = new byte[4096];    
-            input = new FileInputStream(file);
-            bis = new BufferedInputStream(input); //read file
-            bis.read(bytes,0,bytes.length);
-            output = Socket.getOutputStream();
-            output.write(bytes,0,bytes.length); //send file
-            output.flush(); */
+
          } 
              catch (UnknownHostException e) {
                System.err.println("Don't know about router: " + routerName);
